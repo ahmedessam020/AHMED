@@ -49,7 +49,7 @@ function Main(){
         />
         <button onClick={Send} className={styles.SEND}>Send message</button>
       {IsVisible&& <div className={styles.BLUR}><div className={styles.BOX}><p>Thanks!</p></div></div>}
-      <a className={styles.LINK} href="https://github.com/ahno23/AHMED" target="_blank" rel="noopener noreferrer">Source Code!</a>
+      <a className={styles.LINK} href="https://github.com/ahmedessam020/AHMED" target="_blank" rel="noopener noreferrer">Source Code!</a>
       </>
     );
   }

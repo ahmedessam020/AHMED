@@ -86,7 +86,7 @@ app.prepare().then(() => {
     });
 
     // Default handler for Next.js pages
-    server.get('*', (req: Request, res: Response) => {
+    server.get("*", (req: Request, res: Response) => {
         return handle(req, res);
     });
 

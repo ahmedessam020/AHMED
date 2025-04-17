@@ -20,13 +20,13 @@ function del_message(id:string,setMesages:React.Dispatch<React.SetStateAction<{m
         if (!response.ok) {
             console.log(`Error deleting message: ${response.status}`);
         }else{
-            const elementBlur=document.querySelector(`.${styles.blur}`)
-            console.log(elementBlur)
+            const elementBlur = document.querySelector(`.${styles.blur}`);
+            console.log(elementBlur);
             if (elementBlur) {
-                console.log("removendo blur")
-                document.body.removeChild(elementBlur)
-            }else{
-                console.log("blur removido")
+                console.log("removendo blur");
+                document.body.removeChild(elementBlur);
+            } else {
+                console.log("blur removido");
             }
             setMesages(prevMessages => prevMessages.filter(message => message.id !== id));
         }
@@ -39,7 +39,15 @@ function del_message(id:string,setMesages:React.Dispatch<React.SetStateAction<{m
 export default function Message({ message,id,setMesages }: MessageProps) {
     return (
         <div onClick={(e) => {
+            if (document.querySelector(`.${styles.active}`) ) {
+                const blurElement = document.querySelector(`.${styles.blur}`);
+                if (blurElement) {
+                    document.body.removeChild(blurElement);
+                }
+            }
+
             e.currentTarget.classList.toggle(styles.active)
+            
             const elementBlur=document.createElement("div")
             elementBlur.classList.add(styles.blur)
             elementBlur.onclick=()=>{
@@ -49,7 +57,7 @@ export default function Message({ message,id,setMesages }: MessageProps) {
                 }
                 document.body.removeChild(elementBlur)
             }
-            if (document.querySelector(`.${styles.active}`)) {
+            if (document.querySelector(`.${styles.active}`) ) {
                 document.body.appendChild(elementBlur)
             }else{
 
