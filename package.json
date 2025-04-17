@@ -1,0 +1,40 @@
+{
+  "name": "my-app",
+  "version": "0.1.0",
+  "type": "module",
+  "private": true,
+  "engines": {
+    "node": "22.14.0"
+  },
+  "author": "Ahmed Essam",
+  "scripts": {
+    "dev": "nodemon --exec \"node --loader ts-node/esm\" server.ts",
+    "build": "next build",
+    "start": "node --loader ts-node/esm server.ts",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "express-validator": "^7.2.1",
+    "mongoose": "^8.13.2",
+    "next": "^15.2.4",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "ts-node": "^10.9.2",
+    "webpack": "^5.98.0"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.1",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "15.2.4",
+    "nodemon": "^3.1.9",
+    "typescript": "^5"
+  }
+}

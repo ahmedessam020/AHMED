@@ -1,0 +1,59 @@
+.TEXT{
+    resize: none;
+    width: 80vw;
+    height:40vh;
+    position: absolute;
+    bottom:20vh;
+    left: 50%;
+    transform: translate(-50%);
+    border-radius: 20px;
+    padding: 10px;
+    font-size: 20px;
+}
+.SEND{
+    position: absolute;
+    bottom: 5vh;
+    left: 50vw;
+    transform: translate(-50%,-50%);
+    background-color: var(--button);
+    width: 250px;
+    height: 50px;
+    color: var(--colorButton);
+    border: none;
+    border-radius: 50px;
+    font-size: 30px;
+}
+.BLUR{
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.578);
+}
+.BOX{
+    width: 340px;
+    height: 340px;
+    background-color: var(--box);
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    border: 1px solid var(--Cbord);
+    border-radius: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.BOX >p{
+    color: rgb(47, 205, 47);
+    font-size: 50px;
+}
+.LINK{
+    position: fixed;
+    color:var(--A);
+    bottom:1%;
+    left: 50%;
+    transform: translate(-50%);
+    
+}

@@ -1,0 +1,14 @@
+.header{
+    width: 100vw;
+    height: 10vh;
+    background-color: var(--button);
+}
+.Imeg{
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    position: absolute;
+    top:2vh;
+    left: 50%;
+    transform: translate(-50%);
+}
