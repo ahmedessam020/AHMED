@@ -13,6 +13,9 @@ interface IUser extends Document {
     token: string;
 }
 
+interface IRecord extends Document {
+    Num: number;
+}
 // Define the Message schema
 const MessageSchema: Schema = new Schema({
     message: {
@@ -36,6 +39,15 @@ const UserSchema: Schema = new Schema({
         required: true,
     },
 });
+const RecordSchema: Schema = new Schema({
+    Num: {
+        type: Number,
+        required: true,
+    },
+});
+
+
+const Record: Model<IRecord> = mongoose.model<IRecord>('Record', RecordSchema);
 
 // Create the models
 const Message: Model<IMessage> = mongoose.model<IMessage>('Message', MessageSchema);
@@ -43,8 +55,11 @@ const User: Model<IUser> = mongoose.model<IUser>('User', UserSchema);
 
 export {
     Message,
-    User
+    User,
+    Record
 };
 export type {
         IMessage,
-        IUser};
+        IUser,
+        IRecord
+};

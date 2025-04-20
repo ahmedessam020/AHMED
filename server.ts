@@ -8,7 +8,7 @@ import fs from 'fs';
 import { body, validationResult } from "express-validator";
 import path from "path";
 import { fileURLToPath } from "url";
-
+import {Record} from "./models/model.js";
 dotenv.config();
 
 // Recreate __dirname
@@ -22,9 +22,47 @@ const server = express();
 
 server.use(cors());
 server.use(express.json());
+process.env.NUM= "0";
 
+server.use("/",(req, res, next) => {
+    if(req.method === "GET" && req.path === "/") {
+    Record.findOne({}).then((record) => {
+    
+        if (!record) {
+            const newRecord = new Record({ Num: 0 });
+            newRecord.save().then(() => {
+                console.log("Record created");  
+                next(); // Call next() after saving the new record
+            }
+            ).catch((err) => {
+                console.error("Error creating record:", err);
+                next(err); // Pass the error to the next middleware
+            });
+        } else {
+            record.Num += 1;
+            record.save().then(() => {
+                console.log("Record updated");
+                process.env.NUM= record.Num.toString();
+                next(); // Call next() after updating the record
+            }).catch((err) => {
+                console.error("Error updating record:", err);
+                next(err); // Pass the error to the next middleware
+            });
+        }
+    }).catch((err) => {
+        console.error("Error finding record:", err);
+        next(err);
+    });
+    }
+    else {
+        next();
+    }
+});
 app.prepare().then(() => {
     // Define your custom API routes here
+    server.get("/api/get_num", (req: Request, res: Response) => {
+        res.json({ num: process.env.NUM || "0" });
+    });
     server.post("/api/genToken", [
         body("user_name")
             .isString()
