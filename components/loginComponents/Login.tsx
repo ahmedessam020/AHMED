@@ -40,8 +40,8 @@ function Login(){
     return (
         <>
             <div className={styles.loginBox}>
-                <input ref={UserInp} type="text" className={styles.INP} placeholder="username" />
-                <input ref={PassInp} type="password" className={styles.INP} placeholder="password" />
+                <input ref={UserInp} onKeyDown={(e) => { if (e.key === "Enter") login(); }} type="text" className={styles.INP} placeholder="username" />
+                <input ref={PassInp} onKeyDown={(e) => { if (e.key === "Enter") login(); }} type="password" className={styles.INP} placeholder="password" />
                 <button onClick={Return} className={styles.BUTTON}>cancel</button>
                 <button onClick={login} className={styles.BUTTON}>login</button>
             </div>
