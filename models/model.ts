@@ -37,7 +37,7 @@ const UserSchema: Schema = new Schema({
     token: {
         type: String,
         required: true,
-    },
+    }
 });
 const RecordSchema: Schema = new Schema({
     Num: {

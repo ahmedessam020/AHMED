@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Message from "@/components/adminComponents/Message";
 import styles from "./Main_admin.module.css";
+import NumberComponent from "./Number";
 export default function MainAdmin() {   
     const router = useRouter();
     const [Messages, setMessages] = useState<{ msg: string; id: string }[]>([]);
@@ -49,10 +50,13 @@ export default function MainAdmin() {
         }
     }, []);
     return (
-        <div  className={styles.MSG}>
+    
+        <div className={styles.MSG}>
+            <NumberComponent />
             {Messages.map((message, index) => (
                 <Message key={index} message={message.msg} id={message.id} setMesages={setMessages} />
             ))}
         </div>
+    
     );
 }

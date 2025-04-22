@@ -1,7 +1,7 @@
 import  { useEffect, useState } from "react";
 import styles from "./Number.module.css";
 export default function NumberComponent() {
-    const [num, setNum] = useState<string>("0");
+    const [num, setNum] = useState<string>("");
     useEffect(() => {
         fetch("/api/get_num")
             .then((response) => {
@@ -20,7 +20,7 @@ export default function NumberComponent() {
     
     return (
         <div className={styles.NumberComponent}>
-            <p>{num}</p>
+           <p>Current Number: {num || process.env.NUM || "N/A"}</p>
         </div>
     );
 }

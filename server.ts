@@ -23,11 +23,17 @@ const server = express();
 server.use(cors());
 server.use(express.json());
 process.env.NUM= "0";
+Record.findOne({}).then((record) => {
+    if (record) {
+        process.env.NUM = record.Num.toString();
+    }
+}).catch((err) => {
+    console.error("Error fetching record:", err);
+});
 
 server.use("/",(req, res, next) => {
     if(req.method === "GET" && req.path === "/") {
     Record.findOne({}).then((record) => {
-    
         if (!record) {
             const newRecord = new Record({ Num: 0 });
             newRecord.save().then(() => {
@@ -61,7 +67,7 @@ server.use("/",(req, res, next) => {
 app.prepare().then(() => {
     // Define your custom API routes here
     server.get("/api/get_num", (req: Request, res: Response) => {
-        res.json({ num: process.env.NUM || "0" });
+        res.json({ num: process.env.NUM  });
     });
     server.post("/api/genToken", [
         body("user_name")
