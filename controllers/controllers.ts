@@ -52,7 +52,7 @@ const gn_token = async (req: Request, res: Response): Promise<void> => {
     try {
         const Token = generateToken(64);
         const data = await User.findOneAndUpdate(
-            { user_name: req.body.user_name, password: hash(req.body.password) },
+            { user_name: req.body.user_name.toLowerCase(), password: hash(req.body.password) },
             { token: hash(Token) },
             { new: true }
         );
@@ -90,38 +90,88 @@ const del_message = async (req: Request, res: Response): Promise<void> => {
         res.status(500).json({ status: "Error", message: "Internal server error" });
     }
 };
+const see_message = async (req: Request, res: Response): Promise<void> => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        res.status(400).json({ status: "FAIL", data: errors.array(), message: "Invalid input" });
+        return;
+    }
+    const token = req.query.token as string;
+    if (!token) {
+        res.status(400).send(`data: ${JSON.stringify({ error: "Token is required" })}\n\n`);
+        return;
+    }
 
+    try {
+        const user = await User.findOne({ token: hash(token) });
+        if (!user) {
+            res.status(401).send(`data: ${JSON.stringify({ error: "Invalid token" })}\n\n`);
+            console.error("Invalid token");
+            return;
+        }
+
+        // Set headers for SSE
+        res.setHeader("Content-Type", "text/event-stream");
+        res.setHeader("Cache-Control", "no-cache");
+        res.setHeader("Connection", "keep-alive");
+
+
+        // Watch for changes
+        const changeStream = Message.watch();
+        changeStream.on("change", (change) => {
+            if (change.operationType === "insert") {
+                const newMessage = change.fullDocument;
+                res.write(
+                    `data: ${JSON.stringify({
+                        msg: decryptMessage(newMessage.message, process.env.KEY_ENC || ""),
+                        id: newMessage._id,
+                    })}\n\n`
+                );
+            }
+        });
+
+        req.on("close", () => {
+            changeStream.close();
+            res.end();
+        });
+    } catch (error) {
+        console.error("Error in SSE:", error);
+        res.status(500).send(`data: ${JSON.stringify({ error: "Internal server error" })}\n\n`);
+    }
+};
 const get_message = async (req: Request, res: Response): Promise<void> => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        res.status(400).json({ status: "FAIL", data: errors.array(), message: "Check your input" });
-    return;
+        res.status(400).json({ status: "FAIL", data: errors.array(), message: "Invalid input" });
+        return;
+    }
+    const token = req.body.token as string;
+    if (!token) {
+        res.status(400).send(`data: ${JSON.stringify({ error: "Token is required" })}\n\n`);
+        return;
     }
     try {
-        const user = await User.find({ token: hash(req.body.token) });
-        if (user.length) {
-            const data = await Message.find({});
-            if (data.length) {
-                const messages = data.map((item) =>( {
-                    msg: decryptMessage(item.message, process.env.KEY_ENC || ''),
-                    id: item._id
-                }));
-                res.status(201).json({ status: "Success", messages });
-            } else {
-                res.status(404).json({ status: "FAIL", message: "No message found" });
-            }
-        } else {
-            res.status(401).json({ status: "FAIL", message: "Token is not correct" });
+        const user = await User.findOne({ token: hash(token) });
+        if (!user) {
+            res.status(401).send(`data: ${JSON.stringify({ error: "Invalid token" })}\n\n`);
+            console.error("Invalid token");
+            return;
         }
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ status: "Error", message: "Internal server error" });
+        const messages = await Message.find({});
+        const decryptedMessages = messages.map((message) => ({
+            msg: decryptMessage(message.message, process.env.KEY_ENC || ""),
+            id: message._id,
+        }));
+        res.status(200).json({ status: "Success", messages: decryptedMessages });
+    } catch (error) {
+        console.error("Error in get_message:", error);
+        res.status(500).send(`data: ${JSON.stringify({ error: "Internal server error" })}\n\n`);
     }
 };
-
 export {
     save_message,
     gn_token,
-    get_message,
-    del_message
+    see_message,
+    del_message,
+    get_message
 };

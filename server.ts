@@ -2,10 +2,10 @@ import express, { Request, Response } from 'express';
 import cors from 'cors';
 import next from 'next';
 import mongoose from 'mongoose';
-import { save_message, gn_token, get_message, del_message } from "./controllers/controllers.js";
+import { save_message, gn_token, see_message, del_message,get_message } from "./controllers/controllers.js";
 import dotenv from "dotenv";
 import fs from 'fs';
-import { body, validationResult } from "express-validator";
+import { body, query, validationResult } from "express-validator";
 import path from "path";
 import { fileURLToPath } from "url";
 import {Record} from "./models/model.js";
@@ -83,13 +83,19 @@ app.prepare().then(() => {
             .withMessage("password not provided")
     ], gn_token);
 
+    server.get("/api/see_message", [
+        query("token")
+            .isString()
+            .withMessage("token must be a string")
+            .notEmpty()
+            .withMessage("token not provided")
+    ], see_message);
     server.post("/api/get_message", [
         body("token")
             .isString()
             .withMessage("token must be a string")
             .notEmpty()
-            .withMessage("token not provided")
-    ], get_message);
+            .withMessage("token not provided")],get_message);
 
     server.post("/api/del_message", [
         body("token")
