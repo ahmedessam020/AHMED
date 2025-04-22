@@ -17,6 +17,7 @@ function del_message(id:string,setMesages:React.Dispatch<React.SetStateAction<{m
         body: JSON.stringify(data)
     })
     .then(response => {
+        setMesages(prevMessages => prevMessages.filter(message => message.id !== id));
         if (!response.ok) {
             console.log(`Error deleting message: ${response.status}`);
         }else{
@@ -28,7 +29,6 @@ function del_message(id:string,setMesages:React.Dispatch<React.SetStateAction<{m
             } else {
                 console.log("blur removido");
             }
-            setMesages(prevMessages => prevMessages.filter(message => message.id !== id));
         }
     })
     .catch(error => {

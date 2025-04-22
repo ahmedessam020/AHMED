@@ -26,6 +26,7 @@ process.env.NUM= "0";
 Record.findOne({}).then((record) => {
     if (record) {
         process.env.NUM = record.Num.toString();
+        console.log("Record found:", record.Num);
     }
 }).catch((err) => {
     console.error("Error fetching record:", err);
