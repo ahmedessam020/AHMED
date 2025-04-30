@@ -50,6 +50,8 @@ export default function MainAdmin() {
         // Listen for messages from the server
         eventSource.onmessage = (event) => {
             try {
+            
+                console.log("EventSource readyState:", eventSource.readyState);
                 const newMessage = JSON.parse(event.data);
                 setMessages((prevMessages) => [...prevMessages, newMessage]);
             } catch (err) {

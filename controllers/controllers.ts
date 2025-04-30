@@ -5,7 +5,7 @@ import { Request, Response } from "express";
 
 // Utility functions
 function decryptMessage(encryptedMessage: string, key: string): string {
-    const algorithm = 'aes-256-cbc';
+    const algorithm = process.env.ALGORITHM || '';
     const iv = Buffer.from(process.env.IV || '', 'hex');
     const decipher = crypto.createDecipheriv(algorithm, Buffer.from(key, 'hex'), iv);
     let decrypted = decipher.update(encryptedMessage, 'hex', 'utf8');
@@ -14,7 +14,7 @@ function decryptMessage(encryptedMessage: string, key: string): string {
 }
 
 function encryptMessage(message: string, key: string): string {
-    const algorithm = 'aes-256-cbc';
+    const algorithm = process.env.ALGORITHM || '';
     const iv = Buffer.from(process.env.IV || '', "hex");
     const cipher = crypto.createCipheriv(algorithm, Buffer.from(key, 'hex'), iv);
     let encrypted = cipher.update(message, 'utf8', 'hex');
@@ -53,7 +53,7 @@ const gn_token = async (req: Request, res: Response): Promise<void> => {
         const Token = generateToken(64);
         const data = await User.findOneAndUpdate(
             { user_name: req.body.user_name.toLowerCase(), password: hash(req.body.password) },
-            { token: hash(Token) },
+            { token: hash(Token), expireAt: Date.now() + 1000 * 60 * 60 * 24 * 10 },//token expire in 10 days
             { new: true }
         );
         if (data) {
@@ -74,7 +74,7 @@ const del_message = async (req: Request, res: Response): Promise<void> => {
         return;
     }
     try {
-        const user = await User.find({ token: hash(req.body.token) });
+        const user = await User.find({ token: hash(req.body.token), expireAt: { $gt: Date.now() } });
         if (user.length) {
             const data = await Message.deleteOne({ _id: req.body.id });
             if (data.deletedCount > 0) {
@@ -97,13 +97,9 @@ const see_message = async (req: Request, res: Response): Promise<void> => {
         return;
     }
     const token = req.query.token as string;
-    if (!token) {
-        res.status(400).send(`data: ${JSON.stringify({ error: "Token is required" })}\n\n`);
-        return;
-    }
 
     try {
-        const user = await User.findOne({ token: hash(token) });
+        const user = await User.findOne({ token: hash(token), expireAt: { $gt: Date.now() } });
         if (!user) {
             res.status(401).send(`data: ${JSON.stringify({ error: "Invalid token" })}\n\n`);
             console.error("Invalid token");
@@ -121,7 +117,7 @@ const see_message = async (req: Request, res: Response): Promise<void> => {
         changeStream.on("change", (change) => {
             if (change.operationType === "insert") {
                 const newMessage = change.fullDocument;
-                res.write(
+                res.status(200).write(
                     `data: ${JSON.stringify({
                         msg: decryptMessage(newMessage.message, process.env.KEY_ENC || ""),
                         id: newMessage._id,
@@ -146,12 +142,9 @@ const get_message = async (req: Request, res: Response): Promise<void> => {
         return;
     }
     const token = req.body.token as string;
-    if (!token) {
-        res.status(400).send(`data: ${JSON.stringify({ error: "Token is required" })}\n\n`);
-        return;
-    }
+
     try {
-        const user = await User.findOne({ token: hash(token) });
+        const user = await User.findOne({ token: hash(token), expireAt: { $gt: Date.now() } });
         if (!user) {
             res.status(401).send(`data: ${JSON.stringify({ error: "Invalid token" })}\n\n`);
             console.error("Invalid token");

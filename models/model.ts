@@ -11,6 +11,7 @@ interface IUser extends Document {
     user_name: string;
     password: string;
     token: string;
+    expireAt: Date;
 }
 
 interface IRecord extends Document {
@@ -37,7 +38,11 @@ const UserSchema: Schema = new Schema({
     token: {
         type: String,
         required: true,
-    }
+    },
+    expireAt: {
+        type: Date,
+        required: true, 
+    },
 });
 const RecordSchema: Schema = new Schema({
     Num: {
